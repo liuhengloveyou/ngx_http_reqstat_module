@@ -329,7 +329,6 @@ ngx_http_reqstat_show_field(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     }
 
     value = cf->args->elts;
-    user = rmcf->user_defined_str->elts;
     for (i = 1; i < cf->args->nelts; i++) {
         valid = 0;
 
@@ -337,17 +336,22 @@ ngx_http_reqstat_show_field(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             value[i].data++;
             value[i].len--;
 
-            for (j = 0; j < rmcf->user_defined_str->nelts; j++) {
-                if (value[i].len != user[j].len
-                    || ngx_strncmp(value[i].data, user[j].data, value[i].len)
-                        != 0)
-                {
-                    continue;
-                }
+            if (rmcf->user_defined_str) {
 
-                *index++ = NGX_HTTP_REQSTAT_RSRV + j;
-                valid = 1;
-                break;
+                user = rmcf->user_defined_str->elts;
+
+                for (j = 0; j < rmcf->user_defined_str->nelts; j++) {
+                    if (value[i].len != user[j].len
+                            || ngx_strncmp(value[i].data, user[j].data, value[i].len)
+                            != 0)
+                    {
+                        continue;
+                    }
+
+                    *index++ = NGX_HTTP_REQSTAT_RSRV + j;
+                    valid = 1;
+                    break;
+                }
             }
 
         } else {
@@ -821,7 +825,7 @@ ngx_http_reqstat_log_handler(ngx_http_request_t *r)
 
         ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_REQ_TOTAL, 1);
         ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_BYTES_IN,
-                               ngx_http_request_received(r)
+                               r->connection->received
                                     - (store ? store->recv : 0));
 
         if (r->err_status) {
