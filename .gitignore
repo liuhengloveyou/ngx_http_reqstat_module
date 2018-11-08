@@ -35,3 +35,9 @@ objs
 *.dSYM/
 t/servroot
 *.su
+
+# gtags
+GPATH
+GRTAGS
+GTAGS
+
