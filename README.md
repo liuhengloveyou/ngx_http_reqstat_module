@@ -91,7 +91,7 @@ http {
     - **http_508** total number of 508 requests
     - **http_other_detail_status** total number of requests of other status codes**http_ups_4xx* total number of requests of upstream 4xx
     - **http_ups_5xx** total number of requests of upstream 5xx
-    - **http_handshake_time** TCP连接建议所消耗的毫秒数总和，包括TLS握手。
+    - **http_handshake_time** 连接建立所消耗的毫秒数总和，包括TLS握手。
 
   - You can use names in the left column to define output format, with directive 'req_status_show_field'
 
