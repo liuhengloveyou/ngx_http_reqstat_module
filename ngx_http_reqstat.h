@@ -4,7 +4,7 @@
 #include <ngx_http.h>
 
 
-#define NGX_HTTP_REQSTAT_RSRV    29
+#define NGX_HTTP_REQSTAT_RSRV    30
 #define NGX_HTTP_REQSTAT_MAX     50
 #define NGX_HTTP_REQSTAT_USER    NGX_HTTP_REQSTAT_MAX - NGX_HTTP_REQSTAT_RSRV
 
@@ -52,6 +52,7 @@ struct ngx_http_reqstat_rbnode_s {
     ngx_atomic_t                 other_detail_status;
     ngx_atomic_t                 http_ups_4xx;
     ngx_atomic_t                 http_ups_5xx;
+	ngx_atomic_t                 http_handshake_time;
     ngx_atomic_t                 rt;
     ngx_atomic_t                 ureq;
     ngx_atomic_t                 urt;
@@ -192,6 +193,9 @@ typedef struct {
 #define NGX_HTTP_REQSTAT_UPS_5XX                                        \
     offsetof(ngx_http_reqstat_rbnode_t, http_ups_5xx)
 
+#define NGX_HTTP_REQSTAT_HANDSHAKE_TIME				                    \
+	 offsetof(ngx_http_reqstat_rbnode_t, http_handshake_time)
+	 
 #define NGX_HTTP_REQSTAT_EXTRA(slot)                                    \
     (offsetof(ngx_http_reqstat_rbnode_t, extra)                         \
          + sizeof(ngx_atomic_t) * slot)

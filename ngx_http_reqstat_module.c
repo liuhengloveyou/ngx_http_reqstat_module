@@ -36,10 +36,11 @@ static variable_index_t REQSTAT_RSRV_VARIABLES[NGX_HTTP_REQSTAT_RSRV] = {
     variable_index("http_other_detail_status", 26),
     variable_index("http_ups_4xx", 27),
     variable_index("http_ups_5xx", 28),
+	variable_index("handshake_time", 29),
 };
 
 
-off_t ngx_http_reqstat_fields[29] = {
+off_t ngx_http_reqstat_fields[30] = {
     NGX_HTTP_REQSTAT_BYTES_IN,
     NGX_HTTP_REQSTAT_BYTES_OUT,
     NGX_HTTP_REQSTAT_CONN_TOTAL,
@@ -68,7 +69,8 @@ off_t ngx_http_reqstat_fields[29] = {
     NGX_HTTP_REQSTAT_508,
     NGX_HTTP_REQSTAT_OTHER_DETAIL_STATUS,
     NGX_HTTP_REQSTAT_UPS_4XX,
-    NGX_HTTP_REQSTAT_UPS_5XX
+    NGX_HTTP_REQSTAT_UPS_5XX,
+	NGX_HTTP_REQSTAT_HANDSHAKE_TIME
 };
 
 
@@ -821,12 +823,15 @@ ngx_http_reqstat_log_handler(ngx_http_request_t *r)
         fnode = fnode_store[i];
         if (r->connection->requests == 1) {
             ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_CONN_TOTAL, 1);
+			ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_HANDSHAKE_TIME, r->connection->start_msec);
+
+			ngx_log_error(NGX_LOG_ERR,  r->connection->log, NGX_ETIMEDOUT, "@@@>>>>>>>>>>>>>>>>>>>>%d %d\n\n", r->connection->start_msec);
         }
 
         ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_REQ_TOTAL, 1);
-	ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_BYTES_IN,
+		ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_BYTES_IN,
                                r->connection->received
-			       - (store ? store->recv : 0));
+							   - (store ? store->recv : 0));
 	
         if (r->err_status) {
             status = r->err_status;
@@ -976,8 +981,7 @@ ngx_http_reqstat_log_handler(ngx_http_request_t *r)
 #if nginx_version >= 1009002
                 ms = state[j].response_time;
 #else
-                ms = (ngx_msec_int_t) (state[j].response_sec * 1000
-                                               + state[j].response_msec);
+                ms = (ngx_msec_int_t) (state[j].response_sec * 1000 + state[j].response_msec);
 #endif
                 ms = ngx_max(ms, 0);
                 total_ms += ms;
