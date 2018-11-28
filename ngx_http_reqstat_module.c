@@ -824,8 +824,6 @@ ngx_http_reqstat_log_handler(ngx_http_request_t *r)
         if (r->connection->requests == 1) {
             ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_CONN_TOTAL, 1);
 			ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_HANDSHAKE_TIME, r->connection->start_msec);
-
-			ngx_log_error(NGX_LOG_ERR,  r->connection->log, NGX_ETIMEDOUT, "@@@>>>>>>>>>>>>>>>>>>>>%d %d\n\n", r->connection->start_msec);
         }
 
         ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_REQ_TOTAL, 1);
