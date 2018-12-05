@@ -99,80 +99,84 @@ http {
 
 - tsar can parse the result and monitor, see also <https://github.com/alibaba/tsar>
 
-## Directives
+# Directives
 
-------
+## req_status_zone
 
-> **Syntax**: _req_status_zone zone*name value size*
-> **Default**: *none*
-> **Context**: *http*
+**Syntax**: *req_status_zone zone_name value size*
 
-create shared memory for this module. 'zone_name' is the name of memory block.
-'value' defines the key, in which variables can be used.
-'size' defines the size of shared memory.
+**Default**: *none*
+
+**Context**: *http*
+
+create shared memory for this module. 'zone_name' is the name of memory block. 'value' defines the key, in which variables can be used. 'size' defines the size of shared memory.
 
 Example:
 
 ```
 req_status_zone server "$host,$server_addr:$server_port" 10M;
-```
 
 the memory is 10MB, the key is "$host,$server_addr:$server_port", and the name is "server".
+```
 
 - Notice, if you want to use tsar to monitor, you should not use comma in the key.
 
-------
+## req_status
 
-> **Syntax**: _req_status zone_name1 [zone_name2 [zone*name3 [...]]]*
-> **Default**: *none*
-> **Context**: *http、srv、loc*
+**Syntax**: *req_status zone_name1 [zone_name2 [zone_name3 [...]]]*
+
+**Default**: *none*
+
+**Context**: *http、srv、loc*
 
 Enable monitoring. You can specify multiple zones to monitor.
 
-------
+## req_status_show
 
-> **Syntax**: _req_status_show [zone_name1 [zone*name2 [...]]]*
-> **Default**: _all the targets defined by 'req_status*zone'*
-> **Context**: *loc*
+**Syntax**: *req_status_show [zone_name1 [zone_name2 [...]]]*
+
+**Default**: *all the targets defined by 'req_status_zone'*
+
+**Context**: *loc*
 
 Display the status information. You can specify zones to display.
 
-------
+## req_status_show_field
 
-> **Syntax**: _req_status_show_field field_name1 [field_name2 [field*name3 [...]]]*>
-> **Default**: *all the fields, including user defined fields*>
-> **Context**: *loc*
+**Syntax**: *req_status_show_field field_name1 [field_name2 [field_name3 [...]]]*
 
-Define output format, used with the directive 'req_status_show'. You can use names
-to define internal supported fields, see it above. And also you can use variables
-to define user defined fields. 'kv' is always the first field in a line.
+**Default**: *all the fields, including user defined fields*
 
-------
+**Context**: *loc*
 
-> **Syntax**: _req_status_zone_add_indecator zone*name $var1 [$var2 [...]]*
-> **Default**: *none*
-> **Context**: *http*
+Define output format, used with the directive 'req_status_show'. You can use names to define internal supported fields, see it above. And also you can use variables to define user defined fields. 'kv' is always the first field in a line.
+
+## req_status_zone_add_indicator
+
+**Syntax**: *req_status_zone_add_indecator zone_name $var1 [$var2 [...]]*
+
+**Default**: *none*
+
+**Context**: *http*
 
 Add user-defined status by using nginx variables. The status will be appended at the end of each line on display.
 
-------
+## req_status_zone_key_length
 
-> **Syntax**: _req_status_zone_key_length zone*name length*
-> **Default**: *none*
-> **Context**: *http*
+**Syntax**: *req_status_zone_key_length zone_name length*
+
+**Default**: *none*
+
+**Context**: *http*
 
 Define the maximun length of key for a zone. The default is 104.
 
-------
+## req_status_zone_recycle
 
-> **Syntax**: _req_status_zone_recycle zone*name times seconds*
-> **Default**: *none*
-> **Context**: *http*
+**Syntax**: *req_status_zone_recycle zone_name times seconds*
 
-Define the recycle threshold for a zone. Recycle will be switched on when the shared memory is exhausted,
-and will only take effect on imformation whose visit frequency is lower than the setting.
-The setting frequency is defined by 'times' and 'seconds', and it is 10r/min by default.
+**Default**: *none*
 
-```
-req_status_zone_recycle demo_zone 10 60;
-```
+**Context**: *http*
+
+Define the recycle threshold for a zone. Recycle will be switched on when the shared memory is exhausted, and will only take effect on imformation whose visit frequency is lower than the setting. The setting frequency is defined by 'times' and 'seconds', and it is 10r/min by default. req_status_zone_recycle demo_zone 10 60;
