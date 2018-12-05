@@ -180,3 +180,13 @@ Define the maximun length of key for a zone. The default is 104.
 **Context**: *http*
 
 Define the recycle threshold for a zone. Recycle will be switched on when the shared memory is exhausted, and will only take effect on imformation whose visit frequency is lower than the setting. The setting frequency is defined by 'times' and 'seconds', and it is 10r/min by default. req_status_zone_recycle demo_zone 10 60;
+
+## req_status_lazy
+
+**Syntax**: *req_status_lazy on/off*
+
+**Default**: *off*
+
+**Context**: *http*
+
+开启以后可以访问upstream_*变量。
