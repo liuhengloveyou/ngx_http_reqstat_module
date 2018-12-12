@@ -21,10 +21,10 @@ index e4dfe58..9250982 100644
  
  
 diff --git a/src/http/ngx_http_request.c b/src/http/ngx_http_request.c
-index 0de8ace..afd8106 100644
+index c88c271..dbe601f 100644
 --- a/src/http/ngx_http_request.c
 +++ b/src/http/ngx_http_request.c
-@@ -222,6 +222,11 @@ ngx_http_init_connection(ngx_connection_t *c)
+@@ -225,6 +225,11 @@ ngx_http_init_connection(ngx_connection_t *c)
  
      c->data = hc;
  
@@ -36,7 +36,7 @@ index 0de8ace..afd8106 100644
      /* find the server configuration for the address:port */
  
      port = c->listening->servers;
-@@ -471,6 +476,7 @@ ngx_http_wait_request_handler(ngx_event_t *rev)
+@@ -474,6 +479,7 @@ ngx_http_wait_request_handler(ngx_event_t *rev)
      }
  
      b->last += n;
@@ -44,7 +44,7 @@ index 0de8ace..afd8106 100644
  
      if (hc->proxy_protocol) {
          hc->proxy_protocol = 0;
-@@ -521,7 +527,15 @@ ngx_http_create_request(ngx_connection_t *c)
+@@ -524,7 +530,15 @@ ngx_http_create_request(ngx_connection_t *c)
      ngx_http_core_main_conf_t  *cmcf;
  
      c->requests++;
@@ -61,7 +61,7 @@ index 0de8ace..afd8106 100644
      hc = c->data;
  
      cscf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_core_module);
-@@ -1449,7 +1463,8 @@ ngx_http_read_request_header(ngx_http_request_t *r)
+@@ -1451,7 +1465,8 @@ ngx_http_read_request_header(ngx_http_request_t *r)
      }
  
      r->header_in->last += n;
@@ -71,7 +71,7 @@ index 0de8ace..afd8106 100644
      return n;
  }
  
-@@ -2995,6 +3010,8 @@ ngx_http_set_keepalive(ngx_http_request_t *r)
+@@ -2992,6 +3007,8 @@ ngx_http_set_keepalive(ngx_http_request_t *r)
  
          c->data = r;
  
@@ -80,7 +80,7 @@ index 0de8ace..afd8106 100644
          c->sent = 0;
          c->destroyed = 0;
  
-@@ -3233,6 +3250,7 @@ ngx_http_keepalive_handler(ngx_event_t *rev)
+@@ -3230,6 +3247,7 @@ ngx_http_keepalive_handler(ngx_event_t *rev)
      }
  
      c->sent = 0;
@@ -88,7 +88,7 @@ index 0de8ace..afd8106 100644
      c->destroyed = 0;
  
      ngx_del_timer(rev);
-@@ -3324,6 +3342,7 @@ ngx_http_lingering_close_handler(ngx_event_t *rev)
+@@ -3321,6 +3339,7 @@ ngx_http_lingering_close_handler(ngx_event_t *rev)
              return;
          }
  
@@ -96,3 +96,28 @@ index 0de8ace..afd8106 100644
      } while (rev->ready);
  
      if (ngx_handle_read_event(rev, 0) != NGX_OK) {
+diff --git a/src/http/ngx_http_write_filter_module.c b/src/http/ngx_http_write_filter_module.c
+index 0036231..f3d686b 100644
+--- a/src/http/ngx_http_write_filter_module.c
++++ b/src/http/ngx_http_write_filter_module.c
+@@ -12,6 +12,7 @@
+ 
+ static ngx_int_t ngx_http_write_filter_init(ngx_conf_t *cf);
+ 
++ngx_int_t (*ngx_http_write_filter_stat)(ngx_http_request_t *r) = NULL;
+ 
+ static ngx_http_module_t  ngx_http_write_filter_module_ctx = {
+     NULL,                                  /* preconfiguration */
+@@ -253,6 +254,12 @@ ngx_http_write_filter(ngx_http_request_t *r, ngx_chain_t *in)
+ 
+     chain = c->send_chain(c, r->out, limit);
+ 
++	if (ngx_http_write_filter_stat != NULL) {
++        if (ngx_http_write_filter_stat(r) == NGX_ERROR) {
++            return NGX_ERROR;
++        }
++    }
++	
+     ngx_log_debug1(NGX_LOG_DEBUG_HTTP, c->log, 0,
+                    "http write filter %p", chain);
+ 
