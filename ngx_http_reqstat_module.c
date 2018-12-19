@@ -870,13 +870,11 @@ ngx_http_reqstat_log_handler(ngx_http_request_t *r)
 
         if (r->connection->requests == 1) {
             ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_CONN_TOTAL, 1);
-			ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_HANDSHAKE_TIME, r->connection->start_msec);
+			ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_HANDSHAKE_TIME, (r->start_sec - r->connection->start_sec) * 1000 + (r->start_msec - r->connection->start_msec));
         }
 
         ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_REQ_TOTAL, 1);
-		ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_BYTES_IN,
-                               r->connection->received
-							   - (store ? store->recv : 0));
+		ngx_http_reqstat_count(fnode, NGX_HTTP_REQSTAT_BYTES_IN, r->connection->received - (store ? store->recv : 0));
 	
         if (r->err_status) {
             status = r->err_status;

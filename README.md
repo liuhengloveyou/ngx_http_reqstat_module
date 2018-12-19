@@ -56,11 +56,17 @@ http {
 
   - Each line shows the status infomation of a "$host,$server_addr:$server_port".
 
-  - Default line format:
+- You can use names in the left column to define output format, with directive 'req_status_show_field'
 
-    ```
-    kv,bytes_in,bytes_out,conn_total,req_total,http_2xx,http_3xx,http_4xx,http_5xx,http_other_status,rt,ups_req,ups_rt,ups_tries,http_200,http_206,http_302,http_304,http_403,http_404,http_416,http_499,http_500,http_502,http_503,http_504,http_508,http_other_detail_status,http_ups_4xx,http_ups_5xx,http_handshake_time
-    ```
+- Some fields will be removed in future, because user-defined status has been supported.
+
+- tsar can parse the result and monitor, see also <https://github.com/alibaba/tsar>
+
+- Default line format:
+
+```
+kv,bytes_in,bytes_out,conn_total,req_total,http_2xx,http_3xx,http_4xx,http_5xx,http_other_status,rt,ups_req,ups_rt,ups_tries,http_200,http_206,http_302,http_304,http_403,http_404,http_416,http_499,http_500,http_502,http_503,http_504,http_508,http_other_detail_status,http_ups_4xx,http_ups_5xx,http_handshake_time
+```
 
 1. **kv** value of the variable defined by the directive 'req_status_zone'. The maximun key length is configurable, 152B by default, and overlength will be cut off
 2. **bytes_in** total number of bytes received from client
@@ -90,16 +96,9 @@ http {
 26. **http_504** total number of 504 requests
 27. **http_508** total number of 508 requests
 28. **http_other_detail_status** total number of requests of other status codes
-29. **http_ups_4xx* total number of requests of upstream 4xx
+29. **http_ups_4xx ** total number of requests of upstream 4xx
 30. **http_ups_5xx** total number of requests of upstream 5xx
-31. **http_handshake_time** 连接建立所消耗的毫秒数总和，包括TLS握手。
-
-
-- You can use names in the left column to define output format, with directive 'req_status_show_field'
-
-- Some fields will be removed in future, because user-defined status has been supported.
-
-- tsar can parse the result and monitor, see also <https://github.com/alibaba/tsar>
+31. **http_handshake_time** 连接建立所消耗的毫秒数总和。`(r->start_sec - r->connection->start_sec) * 1000 + (r->start_msec - r->connection->start_msec)`
 
 # Directives
 

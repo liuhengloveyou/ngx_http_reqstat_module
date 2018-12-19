@@ -44,23 +44,6 @@ index c88c271..dbe601f 100644
  
      if (hc->proxy_protocol) {
          hc->proxy_protocol = 0;
-@@ -524,7 +530,15 @@ ngx_http_create_request(ngx_connection_t *c)
-     ngx_http_core_main_conf_t  *cmcf;
- 
-     c->requests++;
--
-+	
-+	// HTTP请求开始的地儿
-+	if (c->requests <= 1) {
-+		 tp = ngx_timeofday();
-+		 ngx_msec_int_t  ms = (ngx_msec_int_t)((tp->sec - c->start_sec) * 1000 + (tp->msec - c->start_msec));
-+		 c->start_msec = ngx_max(ms, 0);
-+		 c->start_sec = 0;
-+	}
-+	
-     hc = c->data;
- 
-     cscf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_core_module);
 @@ -1451,7 +1465,8 @@ ngx_http_read_request_header(ngx_http_request_t *r)
      }
  
